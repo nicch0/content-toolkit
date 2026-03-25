@@ -1,12 +1,18 @@
 #!/bin/bash
 
 ACCOUNT="$1"
-OUTPUT_DIR="${2:-./output/tiktok/$ACCOUNT}"
+OUTPUT_DIR="${2:-./output/tiktok/$ACCOUNT}/videos"
 
 if [ -z "$ACCOUNT" ]; then
   echo "Usage: ./download.sh <account> [output_dir]"
-  echo "Example: ./download.sh briarcochran"
-  echo "Example: ./download.sh briarcochran ~/Videos/tiktok"
+  echo ""
+  echo "Arguments:"
+  echo "  account      TikTok username (without the @ prefix)"
+  echo "  output_dir   Where to save videos (default: ./output/tiktok/<account>/videos)"
+  echo ""
+  echo "Examples:"
+  echo "  ./download.sh briarcochran"
+  echo "  ./download.sh briarcochran ~/Videos/tiktok"
   exit 1
 fi
 

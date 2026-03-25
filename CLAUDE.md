@@ -10,16 +10,21 @@ Collection of shell scripts for downloading and managing social media content. E
 
 - [yt-dlp](https://github.com/yt-dlp/yt-dlp): `brew install yt-dlp`
 - [ffmpeg](https://ffmpeg.org/): `brew install ffmpeg`
+- [uv](https://docs.astral.sh/uv/): `brew install uv`
 
 ## Usage
 
 ```bash
 # TikTok: download all videos from an account
 ./tiktok/download.sh <account> [output_dir]
-# Output defaults to ./output/tiktok/<account>/
+
+# TikTok: transcribe downloaded videos to markdown
+./tiktok/transcript.sh [options] <input_dir> [output_dir]
+# Options: --split (one line per sentence), --limit <num>, --accurate (large-v3 model)
 ```
 
 ## Structure
 
-- `tiktok/` — platform-specific download scripts
+- `tiktok/download.sh` — download all videos from a TikTok account
+- `tiktok/transcript.sh` — transcribe videos to markdown using faster-whisper
 - `output/` — default download destination (gitignored via convention)
