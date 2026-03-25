@@ -12,9 +12,9 @@ Files are saved as `YYYYMMDD-title-id.mp4`, so they sort chronologically by file
 ## Usage
 
 ```bash
-# Download to ~/Downloads/Tiktok/<account>/
-./download.sh briarcochran
+# Download to ./output/tiktok/<account>/
+./tiktok/download.sh briarcochran
 
 # Download to a custom directory
-./download.sh briarcochran ~/Videos/tiktok
+./tiktok/download.sh briarcochran ~/Videos/tiktok
 ```

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ACCOUNT="$1"
-OUTPUT_DIR="${2:-$HOME/Downloads/Tiktok/$ACCOUNT}"
+OUTPUT_DIR="${2:-./output/tiktok/$ACCOUNT}"
 
 if [ -z "$ACCOUNT" ]; then
   echo "Usage: ./download.sh <account> [output_dir]"
