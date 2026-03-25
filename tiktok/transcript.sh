@@ -70,18 +70,19 @@ for video in "$INPUT_DIR"/*.mp4; do
 
   echo "Transcribing: $basename"
 
-  transcript=$(uv run --with faster-whisper python3 -c "
-import re
+  transcript=$(VIDEO_PATH="$video" WHISPER_MODEL="$MODEL" WHISPER_SPLIT="$SPLIT" \
+    uv run --with faster-whisper python3 -c "
+import os, re
 from faster_whisper import WhisperModel
-model = WhisperModel('$MODEL', device='cpu', compute_type='int8')
-segments, _ = model.transcribe('$video', language='en')
+model = WhisperModel(os.environ['WHISPER_MODEL'], device='cpu', compute_type='int8')
+segments, _ = model.transcribe(os.environ['VIDEO_PATH'], language='en')
 full = ' '.join(s.text.strip() for s in segments)
-if $SPLIT:
+if os.environ['WHISPER_SPLIT'] == 'true':
     sentences = re.split(r'(?<=[.!?])\s+', full)
     print('\n'.join(s.strip() for s in sentences if s.strip()))
 else:
     print(full)
-" 2>/dev/null)
+")
 
   if [ -n "$transcript" ]; then
     echo "# $basename" > "$output_file"
