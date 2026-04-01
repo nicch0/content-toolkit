@@ -1,92 +1,95 @@
 # content-toolkit
 
-Collection of shell scripts for downloading and managing social media content.
+Unified CLI for downloading and transcribing social media content.
 
 ## Prerequisites
 
-- [yt-dlp](https://github.com/yt-dlp/yt-dlp): `brew install yt-dlp`
+- [uv](https://docs.astral.sh/uv/): `brew install uv` (manages Python deps automatically)
 - [ffmpeg](https://ffmpeg.org/): `brew install ffmpeg` (needed to merge video + audio streams)
-- [uv](https://docs.astral.sh/uv/): `brew install uv` (runs Python tools without global installs)
 
-## TikTok
-
-### Download videos
+## Usage
 
 ```bash
-./tiktok/download.sh <account> [output_dir]
+uv run ctk.py <command> [options]
 ```
 
-| Argument | Description |
-|----------|-------------|
-| `account` | TikTok username (without the @ prefix) |
-| `output_dir` | Where to save videos (default: `./output/tiktok/<account>/videos`) |
+Pass `-f` / `--force` before the command to skip confirmation prompts.
+
+## Download
+
+Downloads videos from TikTok, YouTube, or archives tweets from X/Twitter. Platform is auto-detected from the URL.
 
 ```bash
-./tiktok/download.sh briarcochran
-./tiktok/download.sh briarcochran ~/Videos/tiktok
+uv run ctk.py download <url> [options]
 ```
-
-Files are saved as `YYYYMMDD-title-id.mp4`, so they sort chronologically.
-
-### Transcribe videos
-
-Uses [faster-whisper](https://github.com/SYSTRAN/faster-whisper) (via `uv`) to transcribe `.mp4` files to markdown.
-
-```bash
-./tiktok/transcript.sh [options] <input_dir> [output_dir]
-```
-
-| Argument | Description |
-|----------|-------------|
-| `input_dir` | Folder containing `.mp4` files to transcribe |
-| `output_dir` | Where to save `.md` transcripts (default: current directory) |
 
 | Option | Description |
 |--------|-------------|
-| `--split` | Split transcript into one line per sentence |
-| `--limit <num>` | Only transcribe up to `<num>` videos |
-| `--accurate` | Use large-v3 model for better punctuation (slower, ~3GB download) |
+| `-o, --output` | Output directory (default: `./output/<platform>/videos`) |
+| `-f, --force` | Skip confirmation prompt |
+
+### TikTok
 
 ```bash
-./tiktok/transcript.sh ./output/tiktok/briarcochran/videos
-./tiktok/transcript.sh --split --accurate ./output/tiktok/briarcochran/videos ./transcripts
-./tiktok/transcript.sh --limit 5 ./output/tiktok/briarcochran/videos
+uv run ctk.py download https://www.tiktok.com/@briarcochran
+uv run ctk.py download https://www.tiktok.com/@briarcochran -o ~/Videos/tiktok
 ```
 
-Already-transcribed videos are skipped. A summary of existing/successful/failed is shown at the end.
+### YouTube
 
-## Twitter/X
+Caps video at 1080p. Uses a download archive to skip already-downloaded videos.
 
-### Archive tweets
+```bash
+uv run ctk.py download https://www.youtube.com/watch?v=dQw4w9WgXcQ
+uv run ctk.py download https://www.youtube.com/@channel
+uv run ctk.py download https://www.youtube.com/playlist?list=PLxxx -o ~/Videos/yt
+```
 
-Archives tweets from an X account to Obsidian-compatible markdown files using [Scweet](https://github.com/Altimis/Scweet). Replies are excluded by default.
+### X/Twitter
+
+Archives tweets to Obsidian-compatible markdown with YAML frontmatter. Requires an auth token.
 
 ```bash
 # Set auth token (get from browser DevTools > Application > Cookies > auth_token)
 export X_AUTH_TOKEN="your_auth_token_here"
 
-# Archive recent tweets (default: 10)
-uv run twitter/archive.py username
-
-# Get all tweets with date range
-uv run twitter/archive.py username -l 0 --since 2024-01-01
-
-# Include replies
-uv run twitter/archive.py username --include-replies
+uv run ctk.py download https://x.com/username
+uv run ctk.py download https://x.com/username -l 0 --since 2024-01-01
+uv run ctk.py download https://x.com/username --include-replies
 ```
-
-| Argument | Description |
-|----------|-------------|
-| `username` | X/Twitter username (without @) |
 
 | Option | Description |
 |--------|-------------|
-| `-o, --output` | Output directory (default: `output/x`) |
 | `-l, --limit` | Max tweets to fetch, 0 = all (default: 10) |
 | `--include-replies` | Include replies (excluded by default) |
-| `--since` | Start date in YYYY-MM-DD format |
-| `--until` | End date in YYYY-MM-DD format |
+| `--since` | Start date (YYYY-MM-DD) |
+| `--until` | End date (YYYY-MM-DD) |
 | `--auth-token` | X auth_token cookie (or set `X_AUTH_TOKEN` env var) |
 | `--proxy` | Proxy URL (or set `X_PROXY` env var) |
 
-Files are saved as `YYYYMMDD-slug.md` in `output/x/<username>/` with Obsidian YAML frontmatter (date, likes, retweets, replies, url).
+Files are saved as `YYYYMMDD-slug.md` in `output/x/<username>/`.
+
+## Transcript
+
+Transcribes `.mp4` files to markdown using [faster-whisper](https://github.com/SYSTRAN/faster-whisper).
+
+```bash
+uv run ctk.py transcript <input_dir> [options]
+```
+
+| Option | Description |
+|--------|-------------|
+| `-o, --output` | Output directory (default: current directory) |
+| `--split` | One sentence per line |
+| `--limit <num>` | Max videos to transcribe |
+| `--accurate` | Use large-v3 model (slower, ~3GB download) |
+| `--model <name>` | Override whisper model name |
+| `--subs` | Prefer YouTube subtitles over whisper (faster, needs video ID in filename) |
+
+```bash
+uv run ctk.py transcript ./output/tiktok/videos
+uv run ctk.py transcript --split --accurate ./output/youtube/videos ./transcripts
+uv run ctk.py transcript --subs --limit 5 ./output/youtube/videos
+```
+
+Already-transcribed videos are skipped. A summary of existing/successful/failed is shown at the end.

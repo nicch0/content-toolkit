@@ -17,14 +17,14 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-INPUT_DIR="${ARGS[0]}"
+INPUT="${ARGS[0]}"
 OUTPUT_DIR="${ARGS[1]:-.}"
 
-if [ -z "$INPUT_DIR" ]; then
-  echo "Usage: ./transcript.sh [options] <input_dir> [output_dir]"
+if [ -z "$INPUT" ]; then
+  echo "Usage: ./transcript.sh [options] <input> [output_dir]"
   echo ""
   echo "Arguments:"
-  echo "  input_dir          Folder containing .mp4 files to transcribe"
+  echo "  input              File or folder containing .mp4 files to transcribe"
   echo "  output_dir         Where to save .md transcripts (default: current directory)"
   echo ""
   echo "Options:"
@@ -37,6 +37,7 @@ if [ -z "$INPUT_DIR" ]; then
   echo "  ./transcript.sh ./output/youtube/videos"
   echo "  ./transcript.sh --split ./output/youtube/videos ./transcripts"
   echo "  ./transcript.sh --subs --limit 5 ./output/youtube/videos"
+  echo "  ./transcript.sh --split ./output/youtube/videos/video.mp4"
   exit 1
 fi
 
@@ -48,12 +49,25 @@ fi
 
 mkdir -p "$OUTPUT_DIR"
 
+# Build file list: single file or directory glob
+videos=()
+if [ -f "$INPUT" ]; then
+  videos=("$INPUT")
+elif [ -d "$INPUT" ]; then
+  for v in "$INPUT"/*.mp4; do
+    [ -f "$v" ] && videos+=("$v")
+  done
+else
+  echo "Error: $INPUT is not a file or directory"
+  exit 1
+fi
+
 existing=()
 successful=()
 failed=()
 count=0
 
-for video in "$INPUT_DIR"/*.mp4; do
+for video in "${videos[@]}"; do
   [ -f "$video" ] || continue
 
   basename=$(basename "$video" .mp4)
