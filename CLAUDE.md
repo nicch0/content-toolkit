@@ -4,34 +4,30 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Overview
 
-Unified Python CLI (`ctk.py`) for downloading and transcribing social media content. Auto-detects platform from URL.
+Unified Python CLI (`ctk`) for downloading and transcribing social media content. Auto-detects platform from URL.
 
-## Prerequisites
+## Install
 
-- [uv](https://docs.astral.sh/uv/): `brew install uv`
-- [ffmpeg](https://ffmpeg.org/): `brew install ffmpeg`
+```bash
+brew install uv ffmpeg
+uv tool install .        # puts `ctk` on PATH
+uv tool install . --force # reinstall after changes
+```
 
 ## Usage
 
 ```bash
-# Download videos (platform auto-detected from URL)
-uv run ctk.py download <url> [-o output_dir]
-
-# Transcribe videos to markdown
-uv run ctk.py transcript <input_dir> [-o output_dir]
-# Options: --split, --limit <num>, --accurate, --model <name>, --subs
-
-# Download tweets from X (auto-detected from x.com/twitter.com URL)
-uv run ctk.py download https://x.com/<username> [--auth-token TOKEN]
-# Options: -l/--limit, --since, --until, --include-replies, --proxy
-
-# Skip confirmation prompts
-uv run ctk.py -f download <url>
+ctk download <url> [-o output_dir]           # video download (TikTok/YouTube)
+ctk download https://x.com/<user>            # tweet archive (X/Twitter)
+ctk transcript <input_dir> [-o output_dir]   # transcribe mp4s to markdown
+ctk -f <command>                              # skip confirmation prompts
 ```
 
 ## Structure
 
-- `ctk.py` — unified CLI (download, transcript)
+- `src/ctk/cli.py` — main CLI module
+- `pyproject.toml` — package config and deps
+- `tests/` — unit tests (run with `uv run --with pytest pytest tests/`)
 - `tiktok/` — legacy shell scripts
 - `youtube/` — legacy shell scripts
 - `twitter/` — legacy Python script

@@ -1,8 +1,3 @@
-#!/usr/bin/env python3
-# /// script
-# requires-python = ">=3.11"
-# dependencies = ["yt-dlp", "faster-whisper", "Scweet"]
-# ///
 """Content toolkit — download, transcribe, and archive social media content."""
 
 import argparse
