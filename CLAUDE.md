@@ -21,10 +21,15 @@ Collection of shell scripts for downloading and managing social media content. E
 # TikTok: transcribe downloaded videos to markdown
 ./tiktok/transcript.sh [options] <input_dir> [output_dir]
 # Options: --split (one line per sentence), --limit <num>, --accurate (large-v3 model)
+
+# Twitter/X: archive all tweets from an account
+python twitter/archive.py <username> [options]
+# Requires: X_AUTH_TOKEN env var or --auth-token flag
 ```
 
 ## Structure
 
 - `tiktok/download.sh` — download all videos from a TikTok account
 - `tiktok/transcript.sh` — transcribe videos to markdown using faster-whisper
+- `twitter/archive.py` — archive all tweets from an X/Twitter account using Scweet
 - `output/` — default download destination (gitignored via convention)

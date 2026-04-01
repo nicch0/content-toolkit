@@ -54,3 +54,39 @@ Uses [faster-whisper](https://github.com/SYSTRAN/faster-whisper) (via `uv`) to t
 ```
 
 Already-transcribed videos are skipped. A summary of existing/successful/failed is shown at the end.
+
+## Twitter/X
+
+### Archive tweets
+
+Archives tweets from an X account to Obsidian-compatible markdown files using [Scweet](https://github.com/Altimis/Scweet). Replies are excluded by default.
+
+```bash
+# Set auth token (get from browser DevTools > Application > Cookies > auth_token)
+export X_AUTH_TOKEN="your_auth_token_here"
+
+# Archive recent tweets (default: 10)
+uv run twitter/archive.py username
+
+# Get all tweets with date range
+uv run twitter/archive.py username -l 0 --since 2024-01-01
+
+# Include replies
+uv run twitter/archive.py username --include-replies
+```
+
+| Argument | Description |
+|----------|-------------|
+| `username` | X/Twitter username (without @) |
+
+| Option | Description |
+|--------|-------------|
+| `-o, --output` | Output directory (default: `output/x`) |
+| `-l, --limit` | Max tweets to fetch, 0 = all (default: 10) |
+| `--include-replies` | Include replies (excluded by default) |
+| `--since` | Start date in YYYY-MM-DD format |
+| `--until` | End date in YYYY-MM-DD format |
+| `--auth-token` | X auth_token cookie (or set `X_AUTH_TOKEN` env var) |
+| `--proxy` | Proxy URL (or set `X_PROXY` env var) |
+
+Files are saved as `YYYYMMDD-slug.md` in `output/x/<username>/` with Obsidian YAML frontmatter (date, likes, retweets, replies, url).
